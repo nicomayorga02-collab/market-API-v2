@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { Sequelize } from 'sequelize';
 import initUserModel from './user.model.js';
+import initRoleModel from './role.model.js';
 
 const sequelize = new Sequelize(
 	process.env.DB_NAME,
@@ -15,6 +16,10 @@ const sequelize = new Sequelize(
 );
 
 export const User = initUserModel(sequelize);
+export const Role = initRoleModel(sequelize);
+
+User.belongsTo(Role, { foreignKey: 'roleid', as: 'role' });
+Role.hasMany(User, { foreignKey: 'roleid', as: 'users' });
 
 export async function testConnection() {
 	await sequelize.authenticate();

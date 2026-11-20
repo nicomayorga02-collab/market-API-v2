@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { DataTypes, Model } from 'sequelize';
+import initRoleModel from './role.model.js';
 
 export default function initUserModel(sequelize) {
 	class User extends Model {
@@ -42,6 +43,14 @@ export default function initUserModel(sequelize) {
 			},
 			gender: {
 				type: DataTypes.STRING,
+			},
+			roleid: {
+				type: DataTypes.INTEGER,
+				autoIncrement: false,
+				references: {
+					model: initRoleModel(sequelize),
+					key: 'id',
+				},
 			},
 		},
 		{

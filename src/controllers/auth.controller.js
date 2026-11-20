@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { User } from '../models/index.js';
+import { User,Role } from '../models/index.js';
 
 export async function login(req, res) {
 	const { email, password } = req.body ?? {};
@@ -8,7 +8,9 @@ export async function login(req, res) {
 		return res.status(400).json({ message: 'email y password son obligatorios.' });
 	}
 
-	const user = await User.findOne({ where: { email } });
+	const user = await User.findOne({ where: { email },
+		include: [{ model: Role, as: 'role' }]
+	});
 	if (!user || !(await user.comparePassword(password))) {
 		return res.status(401).json({ message: 'Credenciales inválidas.' });
 	}
@@ -26,6 +28,7 @@ export async function login(req, res) {
 		address: user.address,
 		isActive: user.isActive,
 		gender: user.gender,
+		role: user.role ? { id: user.role.id, name: user.role.name, description: user.role.description } : null,
 	};
 	const token = jwt.sign(userData, secret, { expiresIn: '1h' });
 
